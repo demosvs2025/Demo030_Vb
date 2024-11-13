@@ -31,6 +31,7 @@ Partial Class Clientes
         ButtonEditar = New Button()
         ButtonBorrar = New Button()
         Label1 = New Label()
+        ButtonReporteClientes = New Button()
         CType(DataGridViewClientes, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
@@ -56,7 +57,7 @@ Partial Class Clientes
         ButtonBuscarCliente.Name = "ButtonBuscarCliente"
         ButtonBuscarCliente.Size = New Size(134, 23)
         ButtonBuscarCliente.TabIndex = 2
-        ButtonBuscarCliente.Text = "Buscar cliente"
+        ButtonBuscarCliente.Text = "Buscar clientes"
         ButtonBuscarCliente.UseVisualStyleBackColor = True
         ' 
         ' DataGridViewClientes
@@ -119,11 +120,21 @@ Partial Class Clientes
         Label1.TabIndex = 8
         Label1.Text = "Seleccionar un cliente para Editar o Borrar"
         ' 
+        ' ButtonReporteClientes
+        ' 
+        ButtonReporteClientes.Location = New Point(255, 56)
+        ButtonReporteClientes.Name = "ButtonReporteClientes"
+        ButtonReporteClientes.Size = New Size(75, 23)
+        ButtonReporteClientes.TabIndex = 9
+        ButtonReporteClientes.Text = "Reporte"
+        ButtonReporteClientes.UseVisualStyleBackColor = True
+        ' 
         ' Clientes
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(800, 450)
+        Controls.Add(ButtonReporteClientes)
         Controls.Add(Label1)
         Controls.Add(ButtonBorrar)
         Controls.Add(ButtonEditar)
@@ -149,4 +160,5 @@ Partial Class Clientes
     Friend WithEvents ButtonEditar As Button
     Friend WithEvents ButtonBorrar As Button
     Friend WithEvents Label1 As Label
+    Friend WithEvents ButtonReporteClientes As Button
 End Class

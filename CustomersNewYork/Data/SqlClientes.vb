@@ -28,6 +28,28 @@ Public Class SqlClientes
         dataAdapter.Fill(dataTable)
         Return dataTable
     End Function
+    Public Function ObtenerClientesReporte(textoBuscar As String)
+        Dim conexionSql As New ConexionSql()
+
+        Dim cmdText As String
+        cmdText = "select " _
+             & " ClienteId as 'Id cliente', " _
+             & " case when TipoPersonaId = 1 then 'Persona Moral' else 'Persona Fisica' end as 'Tipo Persona', " _
+             & " case when TipoPersonaId = 1 then NombreEmpresa  " _
+             & " else Nombre + ' ' + ApellidoPaterno + ' ' + ApellidoMaterno end as 'Nombre' " _
+             & " from Clientes " _
+             & " where (isnull(NombreEmpresa, '') like '%" + textoBuscar + "%' " _
+             & "       or (isnull(Nombre, '') +  ' ' " _
+             & "           + isnull(ApellidoPaterno, '') +  ' ' " _
+             & "           + isnull(ApellidoMaterno, ''))  like '%" + textoBuscar + "%') " _
+             & " order by ClienteId"
+
+        Dim command As New SqlCommand(cmdText, conexionSql.ObtenerSqlConnection())
+        Dim dataAdapter As New SqlDataAdapter(command)
+        Dim dataTable As New DataTable
+        dataAdapter.Fill(dataTable)
+        Return dataTable
+    End Function
     Public Function ObtenerCliente(clienteId As Integer)
         Dim conexionSql As New ConexionSql()
 

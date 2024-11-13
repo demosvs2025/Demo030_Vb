@@ -57,4 +57,9 @@
     Private Sub DataGridViewClientes_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles DataGridViewClientes.CellContentClick
 
     End Sub
+
+    Private Sub ButtonReporteClientes_Click(sender As Object, e As EventArgs) Handles ButtonReporteClientes.Click
+        Dim clientesReporteForm As New ClientesReporte()
+        clientesReporteForm.ShowDialog()
+    End Sub
 End Class
