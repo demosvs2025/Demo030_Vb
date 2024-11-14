@@ -148,4 +148,8 @@ Public Class ClientesReporte
     Private Sub ButtonBuscarCliente_Click(sender As Object, e As EventArgs) Handles ButtonBuscarCliente.Click
         BuscarClientes()
     End Sub
+
+    Private Sub ButtonCerrar_Click(sender As Object, e As EventArgs) Handles ButtonCerrar.Click
+        Me.Close()
+    End Sub
 End Class

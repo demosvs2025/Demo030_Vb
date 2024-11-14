@@ -28,6 +28,7 @@ Partial Class ClientesReporte
         ButtonBuscarCliente = New Button()
         TextBoxBuscarCliente = New TextBox()
         LabelBuscar = New Label()
+        ButtonCerrar = New Button()
         CType(DataGridViewClientes, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
@@ -47,10 +48,11 @@ Partial Class ClientesReporte
         ' 
         DataGridViewClientes.AllowUserToAddRows = False
         DataGridViewClientes.AllowUserToDeleteRows = False
+        DataGridViewClientes.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
         DataGridViewClientes.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
         DataGridViewClientes.Location = New Point(12, 56)
         DataGridViewClientes.Name = "DataGridViewClientes"
-        DataGridViewClientes.Size = New Size(767, 150)
+        DataGridViewClientes.Size = New Size(776, 353)
         DataGridViewClientes.TabIndex = 1
         ' 
         ' ButtonBuscarCliente
@@ -78,11 +80,22 @@ Partial Class ClientesReporte
         LabelBuscar.TabIndex = 3
         LabelBuscar.Text = "Buscar"
         ' 
+        ' ButtonCerrar
+        ' 
+        ButtonCerrar.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
+        ButtonCerrar.Location = New Point(713, 415)
+        ButtonCerrar.Name = "ButtonCerrar"
+        ButtonCerrar.Size = New Size(75, 23)
+        ButtonCerrar.TabIndex = 6
+        ButtonCerrar.Text = "Cerrar"
+        ButtonCerrar.UseVisualStyleBackColor = True
+        ' 
         ' ClientesReporte
         ' 
         AutoScaleDimensions = New SizeF(7F, 15F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(800, 450)
+        Controls.Add(ButtonCerrar)
         Controls.Add(ButtonBuscarCliente)
         Controls.Add(TextBoxBuscarCliente)
         Controls.Add(LabelBuscar)
@@ -101,4 +114,5 @@ Partial Class ClientesReporte
     Friend WithEvents ButtonBuscarCliente As Button
     Friend WithEvents TextBoxBuscarCliente As TextBox
     Friend WithEvents LabelBuscar As Label
+    Friend WithEvents ButtonCerrar As Button
 End Class

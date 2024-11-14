@@ -256,11 +256,12 @@ Partial Class Cliente
         ' 
         ' ButtonCancelar
         ' 
-        ButtonCancelar.Location = New Point(211, 375)
+        ButtonCancelar.Anchor = AnchorStyles.Bottom Or AnchorStyles.Right
+        ButtonCancelar.Location = New Point(501, 386)
         ButtonCancelar.Name = "ButtonCancelar"
         ButtonCancelar.Size = New Size(75, 23)
         ButtonCancelar.TabIndex = 23
-        ButtonCancelar.Text = "Cancelar"
+        ButtonCancelar.Text = "Cerrar"
         ButtonCancelar.UseVisualStyleBackColor = True
         ' 
         ' Cliente
