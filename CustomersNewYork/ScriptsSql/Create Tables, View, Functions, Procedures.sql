@@ -1,3 +1,7 @@
+/*
+DROP PROCEDURE, FUNCTION, TABLE, VIEW
+CREATE TABLE, VIEW, FUNCTION, PROCEDURE
+*/
 
 DROP PROCEDURE [dbo].[ObtenerPedidosPorCliente_Fechas]
 GO
@@ -15,6 +19,9 @@ DROP PROCEDURE [dbo].[Productos_Actualizar]
 GO
 DROP PROCEDURE [dbo].[Productos_Borrar]
 GO
+DROP PROCEDURE [dbo].[Productos_ObtenerCombo1]
+GO
+
 
 DROP PROCEDURE [dbo].[Empleados_Obtener]
 GO
@@ -25,6 +32,47 @@ GO
 DROP PROCEDURE [dbo].[Empleados_Actualizar]
 GO
 DROP PROCEDURE [dbo].[Empleados_Borrar]
+GO
+DROP PROCEDURE [dbo].[Empleados_ObtenerCombo1]
+GO
+
+DROP PROCEDURE [dbo].[Clientes_ObtenerCombo1]
+GO
+
+
+DROP PROCEDURE [dbo].[Pedidos_Obtener]
+GO
+
+DROP PROCEDURE [dbo].[PedidoDetalles_ObtenerPorId]
+GO
+
+DROP PROCEDURE [dbo].[Pedidos_ObtenerPorId]
+GO
+
+DROP PROCEDURE [dbo].[Pedidos_Insertar]
+GO
+
+DROP PROCEDURE [dbo].[Pedidos_Actualizar]
+GO
+
+DROP PROCEDURE [dbo].[PedidoDetalles_Insertar]
+GO
+
+DROP PROCEDURE [dbo].[PedidoDetalles_Borrar]
+GO
+
+DROP PROCEDURE [dbo].[Pedidos_Borrar]
+GO
+
+
+DROP FUNCTION [dbo].[ObtenerFechaFormato1]
+GO
+
+DROP FUNCTION [dbo].[ObtenerDecimalFormato1]
+GO
+
+
+DROP TABLE [dbo].[PedidoDetalles]
 GO
 
 DROP TABLE [dbo].[Pedidos]
@@ -39,7 +87,7 @@ GO
 DROP TABLE [dbo].[Clientes]
 GO
 
-DROP VIEW [dbo].[EmpleadosPedidos]
+DROP VIEW [dbo].[EmpleadosPedidos_Vista]
 GO
 
 CREATE TABLE [dbo].[Clientes]
@@ -92,6 +140,20 @@ CREATE TABLE [dbo].[Pedidos]
 )
 GO
 
+CREATE TABLE [dbo].[PedidoDetalles]
+(
+    [PedidoDetalleId] INT NOT NULL PRIMARY KEY IDENTITY(1, 1), 
+    [PedidoId] INT NOT NULL, 
+    [ProductoId] INT NOT NULL, 
+    [NombreProducto] NVARCHAR(100) NOT NULL, 
+    [Cantidad] INT NOT NULL, 
+    [Precio] DECIMAL(18,2) NOT NULL,
+    [Subtotal] DECIMAL(18,2) NOT NULL,
+    FOREIGN KEY(PedidoId) REFERENCES Pedidos(PedidoId),
+    FOREIGN KEY(ProductoId) REFERENCES Productos(ProductoId)
+)
+GO
+
 ---------------------------------------------------------------------
 -- VIEWS Pedidos
 ---------------------------------------------------------------------
@@ -104,6 +166,38 @@ CREATE VIEW [dbo].[EmpleadosPedidos_Vista] AS
     GROUP BY emp.Nombre + ' ' + emp.ApellidoPaterno + ' ' + emp.ApellidoMaterno
 GO
 
+---------------------------------------------------------------------
+-- FUNCTIONS 
+---------------------------------------------------------------------
+
+CREATE FUNCTION [dbo].[ObtenerFechaFormato1] (
+    @Fecha DATETIME
+)
+RETURNS NVARCHAR(10) AS
+BEGIN
+    DECLARE @FechaFormato NVARCHAR(10)
+
+    SET @FechaFormato = CONVERT(NVARCHAR(10), @Fecha, 103)
+
+    RETURN @FechaFormato
+END
+GO
+
+
+
+CREATE FUNCTION [dbo].[ObtenerDecimalFormato1] (
+    @Decimal DECIMAL(18,2)
+)
+RETURNS NVARCHAR(10) AS
+BEGIN
+    DECLARE @DecimalFormato NVARCHAR(10)
+
+    SET @DecimalFormato = '$ ' + CONVERT(VARCHAR(18), CAST(@Decimal AS money), 1)
+
+    RETURN @DecimalFormato
+END
+GO
+        
 ---------------------------------------------------------------------
 -- PROCEDURES Productos
 ---------------------------------------------------------------------
@@ -171,6 +265,16 @@ AS
 BEGIN
     DELETE Productos
     WHERE ProductoId = @ProductoId
+END
+GO
+
+CREATE PROCEDURE [dbo].[Productos_ObtenerCombo1]
+AS
+BEGIN
+    SELECT ProductoId, 
+        NombreProducto AS 'Nombre'
+    FROM Productos
+    ORDER BY 2
 END
 GO
 
@@ -248,44 +352,317 @@ BEGIN
 END
 GO
 
----------------------------------------------------------------------
--- FUNCTIONS 
----------------------------------------------------------------------
-
-DROP FUNCTION [dbo].[ObtenerFechaFormato1]
-GO
-
-CREATE FUNCTION [dbo].[ObtenerFechaFormato1] (
-    @Fecha DATETIME
-)
-RETURNS NVARCHAR(10) AS
+CREATE PROCEDURE [dbo].[Empleados_ObtenerCombo1]
+AS
 BEGIN
-    DECLARE @FechaFormato NVARCHAR(10)
-
-    SET @FechaFormato = CONVERT(NVARCHAR(10), @Fecha, 103)
-
-    RETURN @FechaFormato
+    SELECT EmpleadoId, 
+        Nombre + ' ' + ApellidoPaterno + ' ' + ApellidoMaterno AS 'Nombre'
+    FROM Empleados
+    ORDER BY 2
 END
 GO
 
+---------------------------------------------------------------------
+-- PROCEDURES Clientes
+---------------------------------------------------------------------
 
-DROP FUNCTION [dbo].[ObtenerDecimalFormato1]
-GO
-
-CREATE FUNCTION [dbo].[ObtenerDecimalFormato1] (
-    @Decimal DECIMAL(18,2)
-)
-RETURNS NVARCHAR(10) AS
+CREATE PROCEDURE [dbo].[Clientes_ObtenerCombo1]
+AS
 BEGIN
-    DECLARE @DecimalFormato NVARCHAR(10)
-
-    SET @DecimalFormato = '$ ' + CONVERT(VARCHAR(18), CAST(@Decimal AS money), 1)
-
-    RETURN @DecimalFormato
+    SELECT 
+        ClienteId,
+        CASE WHEN TipoPersonaId = 1 THEN 
+            NombreEmpresa
+        ELSE 
+            Nombre + ' ' + ApellidoPaterno + ' ' + ApellidoMaterno 
+        END AS 'Nombre'
+    FROM Clientes
+    ORDER BY 2
 END
 GO
 
-        
+---------------------------------------------------------------------
+-- PROCEDURES Pedidos
+---------------------------------------------------------------------
+
+CREATE PROCEDURE [dbo].[Pedidos_Obtener]
+(
+    @NombreEmpleado NVARCHAR(100),
+    @NombreCliente NVARCHAR(100)
+)
+AS
+BEGIN
+    SELECT 
+        ped.PedidoId AS 'Id Pedido', 
+        (emp.Nombre + ' ' + emp.ApellidoPaterno + ' ' + emp.ApellidoMaterno) AS 'Nombre empleado',
+        ped.Nombre AS 'Nombre cliente', 
+        dbo.ObtenerFechaFormato1(FechaPedido) AS 'Fecha pedido', 
+        dbo.ObtenerDecimalFormato1(Total) AS 'Total'
+    FROM Pedidos ped LEFT JOIN Empleados emp ON ped.EmpleadoId = emp.EmpleadoId
+    WHERE (emp.Nombre + ' ' + emp.ApellidoPaterno + ' ' + emp.ApellidoMaterno) LIKE '%' + @NombreEmpleado + '%'
+         AND ped.Nombre LIKE '%' + @NombreCliente + '%'
+    ORDER BY ped.PedidoId DESC
+END
+GO
+
+CREATE PROCEDURE [dbo].[PedidoDetalles_ObtenerPorId]
+(
+    @PedidoId INT
+)
+AS
+BEGIN
+    SELECT 
+        PedidoDetalleId AS 'Id Detalle',
+        ProductoId AS 'Id Producto',
+        NombreProducto AS 'Nombre producto',
+        Cantidad,
+        dbo.ObtenerDecimalFormato1(Precio) AS 'Precio',
+        dbo.ObtenerDecimalFormato1(Subtotal) AS 'Subtotal'
+    FROM PedidoDetalles
+    WHERE PedidoId = @PedidoId
+    ORDER BY PedidoDetalleId
+END
+GO
+
+CREATE PROCEDURE [dbo].[Pedidos_ObtenerPorId]
+(
+    @PedidoId INT
+)
+AS
+BEGIN
+    SELECT 
+        EmpleadoId,
+        ClienteId,
+        Nombre, 
+        Direccion1,
+        Direccion2,
+        Telefono,
+        Comentario,
+        dbo.ObtenerFechaFormato1(FechaPedido), 
+        Total AS 'Total'
+    FROM Pedidos
+    WHERE PedidoId = @PedidoId
+END
+GO
+
+CREATE PROCEDURE [dbo].[Pedidos_Insertar]
+(
+    @EmpleadoId INT, 
+    @ClienteId INT, 
+    @Nombre NVARCHAR(250),
+    @Direccion1 NVARCHAR(300), 
+    @Direccion2 NVARCHAR(300), 
+    @Telefono NVARCHAR(50), 
+    @Comentario NVARCHAR(300),
+    @FechaPedido DATETIME,
+    @Total DECIMAL(18,2)
+)
+AS
+BEGIN
+    INSERT Pedidos
+    VALUES(
+        @EmpleadoId, 
+        @ClienteId, 
+        @Nombre,
+        @Direccion1, 
+        @Direccion2, 
+        @Telefono, 
+        @Comentario,
+        @FechaPedido,
+        @Total
+    )
+
+    SELECT @@IDENTITY
+END
+GO
+
+CREATE PROCEDURE [dbo].[Pedidos_Actualizar]
+(
+    @PedidoId INT,    
+    @EmpleadoId INT, 
+    @ClienteId INT, 
+    @Nombre NVARCHAR(250),
+    @Direccion1 NVARCHAR(300), 
+    @Direccion2 NVARCHAR(300), 
+    @Telefono NVARCHAR(50), 
+    @Comentario NVARCHAR(300),
+    @FechaPedido DATETIME
+)
+AS
+BEGIN
+    UPDATE Pedidos SET
+        EmpleadoId = @EmpleadoId,
+        ClienteId = @ClienteId,
+        Nombre = @Nombre,
+        Direccion1 = @Direccion1,
+        Direccion2 = @Direccion2,
+        Telefono = @Telefono,
+        Comentario = @Comentario,
+        FechaPedido = @FechaPedido
+    WHERE PedidoId = @PedidoId
+END
+GO
+
+CREATE PROCEDURE [dbo].[PedidoDetalles_Insertar]
+(
+    @PedidoId INT,
+    @ProductoId INT,
+    @NombreProducto NVARCHAR(100),
+    @Cantidad INT,
+    @Precio DECIMAL(18,2),
+    @Subtotal DECIMAL(18,2)
+)
+AS
+BEGIN
+    DECLARE @Total DECIMAL(18,2)
+    SET @Total = 0
+
+    DECLARE @ErrorMessage NVARCHAR(500)
+    SET @ErrorMessage = ''
+
+    BEGIN TRANSACTION
+
+    BEGIN TRY
+        -- Actualizar cantidad disponible de productos, e insertar detalle del pedido (con la cantidad)
+        UPDATE Productos SET
+            Cantidad = Cantidad - @Cantidad
+        WHERE ProductoId = @ProductoId
+
+        INSERT PedidoDetalles
+        VALUES(
+            @PedidoId,
+            @ProductoId,
+            @NombreProducto,
+            @Cantidad,
+            @Precio,
+            @Subtotal
+        )
+
+        SELECT @Total = SUM(Subtotal)
+        FROM PedidoDetalles
+        WHERE PedidoId = @PedidoId
+
+        UPDATE Pedidos SET
+            Total = @Total
+        WHERE PedidoId = @PedidoId
+
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        SET @ErrorMessage = 'Ocurrio un error, numero: ' 
+            + ISNULL(CAST(Error_Number() AS NVARCHAR), '') + '. ' 
+            + ' mensaje: '+ Error_Message()
+
+        ROLLBACK TRANSACTION
+    END CATCH
+
+    SELECT 
+        ISNULL(@@IDENTITY, 0) AS 'Pedido detalle id',
+        @Total AS 'Total del pedido',
+        @ErrorMessage AS 'Error message'
+END
+GO
+
+CREATE PROCEDURE [dbo].[PedidoDetalles_Borrar]
+(
+    @PedidoDetalleId INT
+)
+AS
+BEGIN
+    DECLARE 
+        @PedidoId INT,
+        @ProductoId INT,
+        @Cantidad DECIMAL(18,2)
+
+    DECLARE @Total DECIMAL(18,2)
+    SET @Total = 0
+
+    DECLARE @ErrorMessage NVARCHAR(500)
+    SET @ErrorMessage = ''
+
+    BEGIN TRANSACTION
+
+    BEGIN TRY
+
+        SELECT 
+            @PedidoId = PedidoId,
+            @ProductoId = ProductoId,
+            @Cantidad = Cantidad 
+        FROM PedidoDetalles 
+        WHERE PedidoDetalleId = @PedidoDetalleId
+
+        -- Actualizar cantidad disponible de productos, y borrar detalle del pedido
+        UPDATE Productos SET
+            Cantidad = Cantidad + @Cantidad
+        WHERE ProductoId = @ProductoId
+
+        DELETE PedidoDetalles
+        WHERE PedidoDetalleId = @PedidoDetalleId
+
+        SELECT @Total = ISNULL(SUM(Subtotal), 0)
+        FROM PedidoDetalles
+        WHERE PedidoId = @PedidoId
+
+        UPDATE Pedidos SET
+            Total = @Total
+        WHERE PedidoId = @PedidoId
+
+        COMMIT TRANSACTION
+    END TRY
+    BEGIN CATCH
+        SET @ErrorMessage = 'Ocurrio un error, numero: ' 
+            + ISNULL(CAST(Error_Number() AS NVARCHAR), '') + '. ' 
+            + ' mensaje: '+ Error_Message()
+
+        ROLLBACK TRANSACTION
+    END CATCH
+
+    SELECT 
+        ISNULL(@@IDENTITY, 0) AS 'Pedido detalle id',
+        @Total AS 'Total del pedido',
+        @ErrorMessage AS 'Error message'
+END
+GO
+
+CREATE PROCEDURE [dbo].[Pedidos_Borrar]
+(
+    @PedidoId INT
+)
+AS
+BEGIN
+
+    DECLARE @PedidoDetalleId INT
+
+    
+    DECLARE CursorPedidoDetalles CURSOR STATIC
+    FOR 
+        SELECT PedidoDetalleId
+        FROM PedidoDetalles
+        WHERE PedidoId = @PedidoId
+    
+    OPEN CursorPedidoDetalles
+
+    FETCH NEXT FROM CursorPedidoDetalles
+    INTO @PedidoDetalleId
+
+    DECLARE @Row INT
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+
+        EXEC PedidoDetalles_Borrar @PedidoDetalleId
+    
+        FETCH NEXT FROM CursorPedidoDetalles
+        INTO @PedidoDetalleId
+    END
+
+    CLOSE CursorPedidoDetalles
+    DEALLOCATE CursorPedidoDetalles
+
+    DELETE Pedidos    
+    WHERE PedidoId = @PedidoId
+END
+GO
         
 ---------------------------------------------------------------------
 -- PROCEDURES Reportes
@@ -498,6 +875,12 @@ INSERT Empleados VALUES('William', 'Wilson', 'Brown')
 INSERT Empleados VALUES('Liam', 'Taylor', 'Smith')
 INSERT Empleados VALUES('Michael', 'Moore', 'Williams')
 
+INSERT Productos VALUES('Producto 1', 400, 10)
+INSERT Productos VALUES('Producto 2', 500, 10)
+INSERT Productos VALUES('Producto 3', 600, 10)
+INSERT Productos VALUES('Producto 4', 700, 10)
+INSERT Productos VALUES('Producto 5', 800, 10)
+INSERT Productos VALUES('Producto 6', 900, 10)
 
 INSERT Pedidos VALUES(1, 1, 'Empresa 1', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250114', 100)
 INSERT Pedidos VALUES(2, 1, 'Empresa 1', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250215', 150)
@@ -507,32 +890,55 @@ INSERT Pedidos VALUES(5, 1, 'Empresa 1', 'Dir 1', 'Dir 2', '555', 'Comentario', 
 INSERT Pedidos VALUES(6, 1, 'Empresa 1', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250219', 140)
 INSERT Pedidos VALUES(1, 1, 'Empresa 1', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250220', 210)
 
-INSERT Pedidos VALUES(2, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250114', 200)
-INSERT Pedidos VALUES(3, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250215', 250)
-INSERT Pedidos VALUES(4, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250216', 290)
-INSERT Pedidos VALUES(5, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250217', 220)
-INSERT Pedidos VALUES(6, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250218', 260)
-INSERT Pedidos VALUES(1, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250219', 240)
-INSERT Pedidos VALUES(2, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250220', 310)
+INSERT Pedidos VALUES(2, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250314', 200)
+INSERT Pedidos VALUES(3, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250315', 250)
+INSERT Pedidos VALUES(4, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250316', 290)
+INSERT Pedidos VALUES(5, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250317', 220)
+INSERT Pedidos VALUES(6, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250318', 260)
+INSERT Pedidos VALUES(1, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250319', 240)
+INSERT Pedidos VALUES(2, 3, 'Empresa 3', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250320', 310)
 
-INSERT Pedidos VALUES(3, 4, 'Empresa 4', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250114', 100)
-INSERT Pedidos VALUES(4, 4, 'Empresa 4', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250215', 150)
+INSERT Pedidos VALUES(3, 4, 'Empresa 4', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250414', 100)
+INSERT Pedidos VALUES(4, 4, 'Empresa 4', 'Dir 1', 'Dir 2', '555', 'Comentario', '20250415', 150)
 
 
-INSERT Productos VALUES('Producto 1', 400, 10)
-INSERT Productos VALUES('Producto 2', 500, 10)
-INSERT Productos VALUES('Producto 3', 600, 10)
-INSERT Productos VALUES('Producto 4', 700, 10)
-INSERT Productos VALUES('Producto 5', 800, 10)
-INSERT Productos VALUES('Producto 6', 900, 10)
+INSERT PedidoDetalles VALUES(1, 1, 'Producto 1', 5, 10, 50)
+INSERT PedidoDetalles VALUES(1, 2, 'Producto 2', 5, 10, 50)
+
+INSERT PedidoDetalles VALUES(2, 1, 'Producto 1', 5, 10, 50)
+INSERT PedidoDetalles VALUES(2, 2, 'Producto 2', 5, 10, 50)
+INSERT PedidoDetalles VALUES(2, 3, 'Producto 3', 5, 10, 50)
+
+INSERT PedidoDetalles VALUES(3, 1, 'Producto 1', 19, 10, 190)
+INSERT PedidoDetalles VALUES(4, 1, 'Producto 1', 12, 10, 120)
+INSERT PedidoDetalles VALUES(5, 1, 'Producto 1', 16, 10, 160)
+INSERT PedidoDetalles VALUES(6, 1, 'Producto 1', 14, 10, 140)
+INSERT PedidoDetalles VALUES(7, 1, 'Producto 1', 21, 10, 210)
+
+INSERT PedidoDetalles VALUES(8, 1, 'Producto 1', 20, 10, 200)
+INSERT PedidoDetalles VALUES(9, 1, 'Producto 1', 25, 10, 250)
+INSERT PedidoDetalles VALUES(10, 1, 'Producto 1', 29, 10, 290)
+INSERT PedidoDetalles VALUES(11, 1, 'Producto 1', 22, 10, 220)
+INSERT PedidoDetalles VALUES(12, 1, 'Producto 1', 26, 10, 260)
+INSERT PedidoDetalles VALUES(13, 1, 'Producto 1', 24, 10, 240)
+INSERT PedidoDetalles VALUES(14, 1, 'Producto 1', 31, 10, 310)
+
+INSERT PedidoDetalles VALUES(15, 1, 'Producto 1', 1, 10, 10)
+INSERT PedidoDetalles VALUES(15, 2, 'Producto 2', 1, 10, 10)
+INSERT PedidoDetalles VALUES(15, 3, 'Producto 3', 1, 10, 10)
+INSERT PedidoDetalles VALUES(15, 4, 'Producto 4', 7, 10, 70)
+
+INSERT PedidoDetalles VALUES(16, 1, 'Producto 1', 1, 10, 10)
+INSERT PedidoDetalles VALUES(16, 2, 'Producto 2', 1, 10, 10)
+INSERT PedidoDetalles VALUES(16, 3, 'Producto 3', 1, 10, 10)
+INSERT PedidoDetalles VALUES(16, 4, 'Producto 4', 1, 10, 10)
+INSERT PedidoDetalles VALUES(16, 5, 'Producto 5', 11, 10, 110)
+
 
 ---------------------------------------------------------------------
 -- EXEC PROCEDURE Reporte
 ---------------------------------------------------------------------
 
-exec [dbo].[ObtenerPedidosPorCliente_Fechas]
-
-
-
+-- exec [dbo].[ObtenerPedidosPorCliente_Fechas]
 
 

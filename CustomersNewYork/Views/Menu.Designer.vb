@@ -30,6 +30,7 @@ Partial Class Menu
         PedidoToolStripMenuItem = New ToolStripMenuItem()
         PedidosPorClienteToolStripMenuItem = New ToolStripMenuItem()
         TotalesMayorAMenorToolStripMenuItem = New ToolStripMenuItem()
+        PedidosPorEmpleadoToolStripMenuItem = New ToolStripMenuItem()
         ProductosToolStripMenuItem = New ToolStripMenuItem()
         NuevoProductoToolStripMenuItem = New ToolStripMenuItem()
         BuscarProductosToolStripMenuItem = New ToolStripMenuItem()
@@ -38,7 +39,8 @@ Partial Class Menu
         BuscarEmpleadosToolStripMenuItem = New ToolStripMenuItem()
         CatalogosToolStripMenuItem = New ToolStripMenuItem()
         SalirToolStripMenuItem = New ToolStripMenuItem()
-        PedidosPorEmpleadoToolStripMenuItem = New ToolStripMenuItem()
+        NuevoPedidoToolStripMenuItem = New ToolStripMenuItem()
+        BuscarPedidosToolStripMenuItem = New ToolStripMenuItem()
         MenuStrip1.SuspendLayout()
         SuspendLayout()
         ' 
@@ -61,23 +63,24 @@ Partial Class Menu
         ' NuevoClienteToolStripMenuItem
         ' 
         NuevoClienteToolStripMenuItem.Name = "NuevoClienteToolStripMenuItem"
-        NuevoClienteToolStripMenuItem.Size = New Size(158, 22)
+        NuevoClienteToolStripMenuItem.Size = New Size(180, 22)
         NuevoClienteToolStripMenuItem.Text = "Nuevo cliente"
         ' 
         ' BuscarClientesToolStripMenuItem
         ' 
         BuscarClientesToolStripMenuItem.Name = "BuscarClientesToolStripMenuItem"
-        BuscarClientesToolStripMenuItem.Size = New Size(158, 22)
+        BuscarClientesToolStripMenuItem.Size = New Size(180, 22)
         BuscarClientesToolStripMenuItem.Text = "Buscar clientes"
         ' 
         ' ReporteClientesToolStripMenuItem
         ' 
         ReporteClientesToolStripMenuItem.Name = "ReporteClientesToolStripMenuItem"
-        ReporteClientesToolStripMenuItem.Size = New Size(158, 22)
+        ReporteClientesToolStripMenuItem.Size = New Size(180, 22)
         ReporteClientesToolStripMenuItem.Text = "Reporte clientes"
         ' 
         ' PedidoToolStripMenuItem
         ' 
+        PedidoToolStripMenuItem.DropDownItems.AddRange(New ToolStripItem() {NuevoPedidoToolStripMenuItem, BuscarPedidosToolStripMenuItem})
         PedidoToolStripMenuItem.Name = "PedidoToolStripMenuItem"
         PedidoToolStripMenuItem.Size = New Size(61, 20)
         PedidoToolStripMenuItem.Text = "Pedidos"
@@ -94,6 +97,12 @@ Partial Class Menu
         TotalesMayorAMenorToolStripMenuItem.Name = "TotalesMayorAMenorToolStripMenuItem"
         TotalesMayorAMenorToolStripMenuItem.Size = New Size(194, 22)
         TotalesMayorAMenorToolStripMenuItem.Text = "Totales mayor a menor"
+        ' 
+        ' PedidosPorEmpleadoToolStripMenuItem
+        ' 
+        PedidosPorEmpleadoToolStripMenuItem.Name = "PedidosPorEmpleadoToolStripMenuItem"
+        PedidosPorEmpleadoToolStripMenuItem.Size = New Size(194, 22)
+        PedidosPorEmpleadoToolStripMenuItem.Text = "Pedidos por empleado"
         ' 
         ' ProductosToolStripMenuItem
         ' 
@@ -145,11 +154,17 @@ Partial Class Menu
         SalirToolStripMenuItem.Size = New Size(41, 20)
         SalirToolStripMenuItem.Text = "Salir"
         ' 
-        ' PedidosPorEmpleadoToolStripMenuItem
+        ' NuevoPedidoToolStripMenuItem
         ' 
-        PedidosPorEmpleadoToolStripMenuItem.Name = "PedidosPorEmpleadoToolStripMenuItem"
-        PedidosPorEmpleadoToolStripMenuItem.Size = New Size(194, 22)
-        PedidosPorEmpleadoToolStripMenuItem.Text = "Pedidos por empleado"
+        NuevoPedidoToolStripMenuItem.Name = "NuevoPedidoToolStripMenuItem"
+        NuevoPedidoToolStripMenuItem.Size = New Size(180, 22)
+        NuevoPedidoToolStripMenuItem.Text = "Nuevo pedido"
+        ' 
+        ' BuscarPedidosToolStripMenuItem
+        ' 
+        BuscarPedidosToolStripMenuItem.Name = "BuscarPedidosToolStripMenuItem"
+        BuscarPedidosToolStripMenuItem.Size = New Size(180, 22)
+        BuscarPedidosToolStripMenuItem.Text = "Buscar pedidos"
         ' 
         ' Menu
         ' 
@@ -183,4 +198,6 @@ Partial Class Menu
     Friend WithEvents NuevoEmpleadoToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents BuscarEmpleadosToolStripMenuItem As ToolStripMenuItem
     Friend WithEvents PedidosPorEmpleadoToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents NuevoPedidoToolStripMenuItem As ToolStripMenuItem
+    Friend WithEvents BuscarPedidosToolStripMenuItem As ToolStripMenuItem
 End Class

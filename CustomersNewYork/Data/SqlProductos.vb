@@ -78,4 +78,19 @@ Public Class SqlProductos
         command.ExecuteNonQuery()
         command.Connection.Close()
     End Sub
+
+    Public Function ObtenerProductosCombo1()
+        Dim conexionSql As New ConexionSql()
+
+        Dim cmdText As String
+        cmdText = "Productos_ObtenerCombo1"
+
+        Dim command As New SqlCommand(cmdText, conexionSql.ObtenerSqlConnection())
+        command.CommandType = CommandType.StoredProcedure
+
+        Dim dataAdapter As New SqlDataAdapter(command)
+        Dim dataTable As New DataTable
+        dataAdapter.Fill(dataTable)
+        Return dataTable
+    End Function
 End Class

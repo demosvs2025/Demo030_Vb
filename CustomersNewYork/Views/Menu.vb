@@ -56,4 +56,16 @@
         pedidosPorEmpleadoForm.MdiParent = Me
         pedidosPorEmpleadoForm.Show()
     End Sub
+
+    Private Sub NuevoPedidoToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles NuevoPedidoToolStripMenuItem.Click
+        Dim pedidoForm As New Pedido
+        pedidoForm.MdiParent = Me
+        pedidoForm.Show()
+    End Sub
+
+    Private Sub BuscarPedidosToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles BuscarPedidosToolStripMenuItem.Click
+        Dim pedidosForm As New Pedidos
+        pedidosForm.MdiParent = Me
+        pedidosForm.Show()
+    End Sub
 End Class
